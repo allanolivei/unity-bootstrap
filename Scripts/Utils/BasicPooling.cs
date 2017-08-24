@@ -15,11 +15,6 @@ public class BasicPooling<T>
         get { return queue.Count; }
     }
 
-    public void Empty()
-    {
-        this.queue.Clear();
-    }
-
     public virtual T Get( params object[] args )
     {
         if (queue.Count > 0)
@@ -41,7 +36,7 @@ public class BasicPooling<T>
 public class UnityObjectPooling<T> : BasicPooling<T> where T : UnityEngine.Object
 {
 
-    protected T objectReference;
+    public T objectReference { get; protected set; }
 
     public UnityObjectPooling( T objectReference ) : base()
     {
@@ -50,31 +45,9 @@ public class UnityObjectPooling<T> : BasicPooling<T> where T : UnityEngine.Objec
 
     public override T Create( params object[] args )
     {
-        return UnityEngine.Object.Instantiate<T>(objectReference);
-    }
-
-    public override T Get( params object[] args )
-    {
-        T result = base.Get(args);
-        result.name = objectReference.name;
-        return result;
-    }
-
-    public virtual W GetComponent<W>( params object[] args ) where W : UnityEngine.Component
-    {
-        var element = this.Get(args) as W;
-#if UNITY_EDITOR
-        if( element == null )
-            element = Create(args) as W;
-#endif
-        element.gameObject.SetActive(true);
-        return element;
-    }
-
-    public virtual void RecycleComponent<W>( W component ) where W : UnityEngine.Component
-    {
-        component.gameObject.SetActive(false);
-        this.Recycle( component as T );
+        T inst = UnityEngine.Object.Instantiate<T>(objectReference);
+        inst.name = objectReference.name;
+        return inst;
     }
 
 }
