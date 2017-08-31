@@ -1,10 +1,10 @@
-﻿Shader "Bootstrap/FX/RimFocus"
+﻿Shader "Bootstrap/Lit/TextureAmbientDiffuseRim2Side"
 {
 	Properties
 	{
 		[NoScaleOffset] _MainTex("Texture", 2D) = "white" {}
 		_RimColor("Rim Color", Color) = (1, 1, 1, 1)
-		_FXScale("FX Scale", Range(0.0, 1.0)) = 1.0
+		_RimPower("Rim Power", Range(0, 3)) = 1.0
 	}
 
 	SubShader
@@ -12,6 +12,7 @@
 		Pass
 		{
 			Tags{ "LightMode" = "ForwardBase" }
+			Cull Off
 
 			CGPROGRAM
 
@@ -28,8 +29,9 @@
 			};
 
 			sampler2D _MainTex;
+
 			uniform float4 _RimColor;
-			uniform fixed _FXScale;
+			fixed _RimPower;
 
 			v2f vert(appdata_base v)
 			{
@@ -45,15 +47,11 @@
 				// ambient light
 				o.diff.rgb += ShadeSH9(half4(worldNormal,1));
 
-				//ping pong 0 - 1. (the value multiply time change speed)
-				float pingpong = (sin(_Time.y * 3.0) + 1) * 0.5;
-
 				// rim light
 				float3 viewDir = normalize(ObjSpaceViewDir(v.vertex));
 				float dotProduct = 1 - dot(v.normal, viewDir);
-				float _RimPower = pingpong * 0.5f + 0.6f;
 				fixed4 rim = smoothstep(1 - _RimPower, 1.0, dotProduct) * _RimColor;
-				o.diff += rim * _FXScale;
+				o.diff += rim;
 
 				return o;
 			}

@@ -116,6 +116,10 @@ public class MayaToUnity : EditorWindow
     {
         //Debug.Log( EditorPrefs.GetString("MAYA_TO_UNITY_PREFIX", "{\"prefix\":[]}") );
         //prefixGrp = JsonUtility.FromJson<PrefixGroup>( EditorPrefs.GetString("MAYA_TO_UNITY_PREFIX", "{\"prefix\":[]}"));
+        string dir = System.IO.Path.GetDirectoryName(configPath);
+        if (!System.IO.Directory.Exists(dir)) System.IO.Directory.CreateDirectory(dir);
+        if (!System.IO.File.Exists(configPath)) System.IO.File.WriteAllText(configPath, "{}");
+
         prefixGrp = JsonUtility.FromJson<PrefixGroup>(System.IO.File.ReadAllText(configPath));
 
         if ( !prefixGrp.HasPrefix("_BOX") )
