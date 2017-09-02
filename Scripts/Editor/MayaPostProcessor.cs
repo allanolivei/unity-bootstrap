@@ -11,6 +11,7 @@ public class MayaPostProcessor : AssetPostprocessor
         {
             ModelImporter modelImporter = assetImporter as ModelImporter;
             modelImporter.materialName = ModelImporterMaterialName.BasedOnMaterialName;
+            modelImporter.materialSearch = ModelImporterMaterialSearch.Everywhere;
         }
     }
 }
