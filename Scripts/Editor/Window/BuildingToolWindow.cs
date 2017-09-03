@@ -214,7 +214,7 @@ namespace Bootstrap
 
                 BuildPlayerOptions buildPlayerOptions = new BuildPlayerOptions();
                 buildPlayerOptions.scenes = scenesResult.ToArray();
-                buildPlayerOptions.locationPathName = this.GetFolderToBuild(platforms[i].target);//"Build/"++"/Mac/Nefron.app";
+                buildPlayerOptions.locationPathName = GetFolderToBuild(platforms[i].target);//"Build/"++"/Mac/Nefron.app";
                 buildPlayerOptions.target = platforms[i].target;
                 if (EditorUserBuildSettings.development)
                     buildPlayerOptions.options = BuildOptions.AllowDebugging | BuildOptions.Development;
@@ -237,7 +237,7 @@ namespace Bootstrap
             return result;
         }
 
-        private string GetFolderToBuild( BuildTarget target )
+        private static string GetFolderToBuild( BuildTarget target )
         {
             string p = target.ToString();
             BUILDTARGET_TO_PATH.TryGetValue(target, out p);
@@ -274,7 +274,7 @@ namespace Bootstrap
 
         private void LoadScenes()
         {
-            string[] allScenes = this.FindAllScenes();
+            string[] allScenes = FindAllScenes();
             string[] enabledScenes =
                 EditorPrefs.HasKey(KEY_SCENE_ENABLED) ?
                     EditorPrefs.GetString(KEY_SCENE_ENABLED, string.Empty).Split('*') :
@@ -324,7 +324,7 @@ namespace Bootstrap
             EditorPrefs.SetString(KEY_PLATFORM_ENABLED, result);
         }
 
-        private string[] FindAllScenes()
+        private static string[] FindAllScenes()
         {
             string[] id = AssetDatabase.FindAssets("t:Scene", null);
             string[] scenes = new string[id.Length];
@@ -335,13 +335,29 @@ namespace Bootstrap
             return scenes;
         }
 
-        private string[] GetScenesInSettings()
+        private static string[] GetScenesInSettings()
         {
             string[] scenes = new string[EditorBuildSettings.scenes.Length];
             for (var i = 0 ; i < scenes.Length ; i++)
                 scenes[i] = EditorBuildSettings.scenes[i].path;
             return scenes;
         }
+
+		[MenuItem("Bootstrap/Build/Test")]
+		public static void BuildTest()
+		{
+		    EditorUserBuildSettings.allowDebugging = true;
+		    EditorUserBuildSettings.development = true;
+
+		    BuildPlayerOptions buildPlayerOptions = new BuildPlayerOptions();
+		    buildPlayerOptions.scenes = new[] { SceneManager.GetActiveScene().path };
+			buildPlayerOptions.locationPathName = GetFolderToBuild(EditorUserBuildSettings.activeBuildTarget);
+			buildPlayerOptions.target = EditorUserBuildSettings.activeBuildTarget;
+			buildPlayerOptions.options = BuildOptions.AllowDebugging | BuildOptions.Development | BuildOptions.AutoRunPlayer;
+		    string result = BuildPipeline.BuildPlayer(buildPlayerOptions);
+
+		    EditorUtility.DisplayDialog("Build Result", string.IsNullOrEmpty(result) ? "Build Complete Success" : result, "ok");
+		}
 
         //[MenuItem("Bootstrap/Build/Test/Mac")]
         //public static void BuildTestMac()
