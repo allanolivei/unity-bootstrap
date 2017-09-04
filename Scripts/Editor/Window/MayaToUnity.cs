@@ -10,53 +10,7 @@ namespace Bootstrap
 {
 
 
-    /// <summary>
-
-    /// </summary>
-    /// 
-    /// 
-    /// <summary>
-    /// _GO: GameObject
-    /// _DW: Drawer
-    /// _DR: DoorRotate
-    /// _DS: DoorRotateSync
-    /// _LAUNCH: DraggingLaunch
-    /// _TRASH: Trash
-    /// _BASKET: Basket
-    /// 
-    /// 
-    /// #OBRIGATORY
-    /// _COL: MeshCollider
-    /// _BOX: BoxCollider
-    /// _SPHERE: SphereCollider
-    /// _RR: Remove Renderer
-    /// _PREF: Prefab
-    /// 
-    /// 
-    /// 
-    /// 
-    /// #TUTORIAL
-    /// ##Items (Pref caso seja um prefab)
-    /// IT_nameOfItem_GO_PREF (IT: item, GO: gameobject, PREF: prefab)
-    /// ##Puzzle
-    /// PUZZLES: PUZZLE_nameOfItem
-    /// ##Portas: 
-    /// DoorRotate: Porta rotacionavel
-    /// DoorRotateSync: Sincroniza as portas rotacionaveis filhas
-    /// DoorSlider: Porta arrastavel
-    /// DoorSliderSync: Sincroniza as portas arrastaveis filhas
-    /// ClickableButton: Procura um elementro que contem trigger no nome, escuta seus eventos(ClickableTrigger) e procura um valuable como irmao
-    /// DoorStateColor: Modifica a cor de dois elementos de acordo com o estado da porta
-    /// Ex.: 
-    /// -door_GO_DSSync (Sync)
-    ///     -door_BTN (Button)
-    ///         -door_trigger (Trigger)
-    ///     -door_DSli (Slider)
-    ///     -door_DStateC (DoorStateColor)
-    ///         -on
-    ///         -off
-    /// </summary>
-    /// 
+    
 
     public class MayaToUnity : EditorWindow
     {

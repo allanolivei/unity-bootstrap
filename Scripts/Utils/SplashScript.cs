@@ -1,4 +1,6 @@
-﻿using System.Collections;
+﻿// Copyright (c) 2017-2018 Allan Oliveira Marinho(allanolivei@gmail.com), Inc. All Rights Reserved. 
+
+using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 

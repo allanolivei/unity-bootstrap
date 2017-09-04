@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2017-2018 Allan Oliveira Marinho, Inc. All Rights Reserved.
+﻿// Copyright (c) 2017-2018 Allan Oliveira Marinho(allanolivei@gmail.com), Inc. All Rights Reserved. 
 
 Shader "Bootstrap/Transparent/Fade" 
 {
@@ -10,7 +10,7 @@ Shader "Bootstrap/Transparent/Fade"
 	 
 	SubShader 
 	{
-	    Tags {"RenderType"="Transparent" "Queue"="Transparent" "IgnoreProjector"="True"}
+	    Tags { "LightMode" = "ForwardBase" "RenderType"="Transparent" "Queue"="Transparent" "IgnoreProjector"="True"}
 	    LOD 200
 	   
 	    Pass 

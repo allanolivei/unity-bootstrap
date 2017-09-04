@@ -1,6 +1,4 @@
-﻿// Upgrade NOTE: replaced '_Object2World' with 'unity_ObjectToWorld'
-
-// Copyright (c) 2017-2018 Allan Oliveira Marinho, Inc. All Rights Reserved.
+﻿// Copyright (c) 2017-2018 Allan Oliveira Marinho(allanolivei@gmail.com), Inc. All Rights Reserved. 
 
 Shader "Bootstrap/Unlit/SkyReflection"
 {

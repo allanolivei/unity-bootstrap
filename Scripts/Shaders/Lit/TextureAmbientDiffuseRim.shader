@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2017-2018 Allan Oliveira Marinho, Inc. All Rights Reserved.
+﻿// Copyright (c) 2017-2018 Allan Oliveira Marinho(allanolivei@gmail.com), Inc. All Rights Reserved. 
 
 Shader "Bootstrap/Lit/TextureAmbientDiffuseRim"
 {
@@ -30,7 +30,6 @@ Shader "Bootstrap/Lit/TextureAmbientDiffuseRim"
 			};
 
 			sampler2D _MainTex;
-
 			uniform float4 _RimColor;
 			fixed _RimPower;
 

@@ -1,4 +1,6 @@
-﻿using System;
+﻿// Copyright (c) 2017-2018 Allan Oliveira Marinho(allanolivei@gmail.com), Inc. All Rights Reserved. 
+
+using System;
 using System.Collections.Generic;
 
 public class BasicPooling<T>

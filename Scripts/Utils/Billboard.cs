@@ -1,21 +1,27 @@
-﻿using System.Collections;
+﻿// Copyright (c) 2017-2018 Allan Oliveira Marinho(allanolivei@gmail.com), Inc. All Rights Reserved. 
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class Billboard : MonoBehaviour
 {
 
+    public bool rotateWithCamera = false;
+
     private Transform cacheTr;
     private Transform camTr;
 
-    void Start()
+    private void Start()
     {
         cacheTr = GetComponent<Transform>();
         camTr = Camera.main.transform;
     }
 
-    void Update()
+    private void Update()
     {
-        cacheTr.rotation = camTr.rotation;
+        cacheTr.rotation = rotateWithCamera ? 
+            camTr.rotation :
+            Quaternion.LookRotation( cacheTr.position - camTr.position, Vector3.up );
     }
 }

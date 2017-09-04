@@ -1,11 +1,13 @@
-﻿using System.Collections;
+﻿// Copyright (c) 2017-2018 Allan Oliveira Marinho(allanolivei@gmail.com), Inc. All Rights Reserved. 
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public static class UnityExtensions
 {
 
-    public static void ChangeMaterial( this Renderer rend, params Material[] materials )
+    public static void ChangeSharedMaterials( this Renderer rend, params Material[] materials )
     {
         Material[] current = rend.sharedMaterials;
         int total = Mathf.Min(current.Length, materials.Length);
