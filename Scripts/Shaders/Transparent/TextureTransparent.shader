@@ -1,4 +1,4 @@
-﻿// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
+﻿// Copyright (c) 2017-2018 Allan Oliveira Marinho, Inc. All Rights Reserved.
 
 Shader "Bootstrap/Transparent/TextureTransparent" 
 {

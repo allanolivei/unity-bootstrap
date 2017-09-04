@@ -1,4 +1,8 @@
-﻿Shader "Bootstrap/Unlit/SkyReflection"
+﻿// Upgrade NOTE: replaced '_Object2World' with 'unity_ObjectToWorld'
+
+// Copyright (c) 2017-2018 Allan Oliveira Marinho, Inc. All Rights Reserved.
+
+Shader "Bootstrap/Unlit/SkyReflection"
 {
 	SubShader
 	{
@@ -19,7 +23,7 @@
 			{
 				v2f o;
 				o.pos = UnityObjectToClipPos(vertex);
-				float3 worldPos = mul(_Object2World, vertex).xyz;
+				float3 worldPos = mul(unity_ObjectToWorld, vertex).xyz;
 				float3 worldViewDir = normalize(UnityWorldSpaceViewDir(worldPos));
 				float3 worldNormal = UnityObjectToWorldNormal(normal);
 				o.worldRefl = reflect(-worldViewDir, worldNormal);

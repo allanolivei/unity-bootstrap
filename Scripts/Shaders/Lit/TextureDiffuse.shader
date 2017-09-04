@@ -1,4 +1,6 @@
-﻿Shader "Bootstrap/Lit/TextureDiffuse"
+﻿// Copyright (c) 2017-2018 Allan Oliveira Marinho, Inc. All Rights Reserved.
+
+Shader "Bootstrap/Lit/TextureDiffuse"
 {
 	Properties
 	{

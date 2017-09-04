@@ -1,4 +1,6 @@
-﻿Shader "Bootstrap/Others/Shadow Casting"
+﻿// Copyright (c) 2017-2018 Allan Oliveira Marinho, Inc. All Rights Reserved.
+
+Shader "Bootstrap/Others/Shadow Casting"
 {
 	SubShader
 	{

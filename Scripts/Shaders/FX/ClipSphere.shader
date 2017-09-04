@@ -1,14 +1,15 @@
 ﻿// Copyright (c) 2017-2018 Allan Oliveira Marinho, Inc. All Rights Reserved.
 
-Shader "Bootstrap/FX/TintFocus"
-{
-	Properties
-	{
-		[NoScaleOffset] _MainTex("Texture", 2D) = "white" {}
-		_Tint("Tint Color", Color) = (1, 1, 1, 1)
-		_FXScale("FX Scale", Range(0.0, 1.0)) = 1.0
-	}
 
+Shader "Bootstrap/FX/ClipSphere" 
+{
+    Properties 
+    {
+		_MainTex("Texture", 2D) = "white" {}
+ 
+        _Center ("Center", Vector) = (0,0,0,0)
+        _Radius ("Radius", float) = 1.5
+	}
 	SubShader
 	{
 		Pass
@@ -27,12 +28,12 @@ Shader "Bootstrap/FX/TintFocus"
 				float2 uv : TEXCOORD0;
 				fixed4 diff : COLOR0;
 				float4 vertex : SV_POSITION;
-				fixed4 color : COLOR1;
+				float3 wpos : TEXCOORD1;
 			};
 
+        	uniform float _Radius;
+        	uniform float3 _Center;
 			sampler2D _MainTex;
-			uniform float4 _Tint;
-			uniform fixed _FXScale;
 
 			v2f vert(appdata_base v)
 			{
@@ -40,31 +41,31 @@ Shader "Bootstrap/FX/TintFocus"
 				o.vertex = UnityObjectToClipPos(v.vertex);
 				o.uv = v.texcoord;
 
-				// diffuse
+				// World Position
+				o.wpos = mul (unity_ObjectToWorld, v.vertex).xyz;
+
+				// Diffuse
 				half3 worldNormal = UnityObjectToWorldNormal(v.normal);
 				half nl = max(0, dot(worldNormal, _WorldSpaceLightPos0.xyz));
 				o.diff = nl * _LightColor0;
 
-				// ambient light
+				// Ambient
 				o.diff.rgb += ShadeSH9(half4(worldNormal,1));
-
-				//ping pong 0 - 1. (the value multiply time change speed)
-				float pingpong = (sin(_Time.y * 3.0) + 1) * 0.5;
-
-				// tint
-				//o.diff += _Tint * pingpong * _FXScale;
-				o.color = (_Tint * pingpong * 0.3 + _Tint * 0.2) * _FXScale;
 
 				return o;
 			}
 
 			fixed4 frag(v2f i) : SV_Target
 			{
-				fixed4 col = tex2D(_MainTex, i.uv) * (1 - i.color.r) + i.color;
+				// The Same thing
+				//if(sign(_radius)*(dot((i.wpos - _ClippingCentre),(i.wpos - _ClippingCentre)) - _radius*_radius)>0) discard;
+				clip(-sign(_Radius)*(dot((i.wpos - _Center),(i.wpos - _Center)) - _Radius*_Radius));
+				fixed4 col = tex2D(_MainTex, i.uv);
 				col *= i.diff;
 				return col;
 			}
 			ENDCG
 		}
 	}
+    FallBack "Diffuse"
 }

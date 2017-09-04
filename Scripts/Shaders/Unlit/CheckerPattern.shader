@@ -1,4 +1,6 @@
-﻿Shader "Bootstrap/Unlit/CheckerPattern"
+﻿// Copyright (c) 2017-2018 Allan Oliveira Marinho, Inc. All Rights Reserved.
+
+Shader "Bootstrap/Unlit/CheckerPattern"
 {
 	Properties
 	{
