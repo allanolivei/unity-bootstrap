@@ -1,23 +1,27 @@
 ﻿
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class FPSDisplay : MonoBehaviour
 {
 
 #if UNITY_EDITOR// || !(UNITY_ANDROID && UNITY_IOS)
 
-    [Header("Aperte = (igual) para mostrar/esconder o display")]
-    [Space]
-    public Vector2 displayPosition;
-
     float deltaTime = 0.0f;
     private const string format = "{0:0.0} ms ({1:0.} fps)\nScreen: {2}x{3} : {4}dpi\nTimeScale: {5}";
+
+    [Header("Aperte = (igual) para mostrar/esconder o display")]
+    [Space]
     public bool showDisplay = true;
+    [Range(0, 1)]
+    public float posX;
+    [Range(0, 1)]
+    public float posY;
 
     void Update()
     {
         deltaTime += (Time.unscaledDeltaTime - deltaTime) * 0.1f;
-        if (Input.GetKeyDown(KeyCode.Equals))
+        if (Input.GetKeyDown(KeyCode.Equals) && !EventSystem.current.currentSelectedGameObject)
         {
             showDisplay = !showDisplay;
         }
@@ -40,7 +44,7 @@ public class FPSDisplay : MonoBehaviour
             //string text = string.Format("{0:0.0} ms ({1:0.} fps)", msec, fps);
             //GUI.Label(rect, text, style);
             string text = string.Format(format, msec, fps, Screen.width, Screen.height, Screen.dpi, Time.timeScale);
-            GUI.Box(new Rect(displayPosition.x, displayPosition.y, 200, 50), text);
+            GUI.Box(new Rect((Screen.width - 200) * posX, (Screen.height - 50) * posY, 200, 50), text);
 
             //GUILayout.Label("Screen: " + Screen.width + "x" + Screen.height + " : " + Screen.dpi + "dpi");
         }
