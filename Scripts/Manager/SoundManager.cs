@@ -1,66 +1,65 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.Audio;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine.SceneManagement;
 
-public class SoundManager : Singleton<SoundManager> {
-
-    public enum SoundType
-    {
-        UI_BACKGROUND,
-        GAME_BACKGROUND,
-        UI_EFFECT,
-        GAME_EFFECT
-    }
-
-
+public class SoundManager : Singleton<SoundManager>
+{
+    /*
+     * Instruções de uso:
+     * 1) Crie um AudioMixer no seu projeto com pelo menos 2 grupos (sugestão: SFX e Music)
+     * 2) Exponha (expose) o volume dos dois grupos criados e os renomeie para SFXVolume e MusicVolume
+     * 3) Crie um objeto para ser o SoundManager e acople este script nele
+     * 4) Adicione todos os grupos e snapshots criados no componente deste script no objeto criado no passo anterior
+     * 5) Para usar os métodos do SoundManager, use SoundManager.GetInstance().MÉTODO();
+     */
 
     public AudioMixer masterMixer;
+    [Space]
+    public AudioGroup[] audioMixerGroups;
+    [Space]
+    public string[] snapshotNames;
 
     protected AudioMixerSnapshot pause;
     protected AudioMixerSnapshot unpause;
 
-    //public Dictionary<string, AudioClip> sounds = new Dictionary<string, AudioClip>();
-    //protected AudioSource source;
-
     protected List<AudioSource> sources = new List<AudioSource>();
-    protected Dictionary<SoundType, AudioMixerGroup> mixerByType = new Dictionary<SoundType, AudioMixerGroup>();
+    protected Dictionary<string, AudioMixerGroup> myMixerGroups = new Dictionary<string, AudioMixerGroup>();
+    protected AudioMixerSnapshot[] snapshots;
 
     protected bool isLoaded = false;
 
     const string musicKey = "MusicVolume";
     const string fxKey = "SFXVolume";
 
-
-    public AudioSource Play( AudioClip clip, SoundType soundType, float delay = 0.0f )
-    {
-        return Play(clip, soundType, soundType.Equals(SoundType.UI_BACKGROUND) || soundType.Equals(SoundType.GAME_BACKGROUND), delay);
-    }
-
-    public AudioSource Play( AudioClip clip, SoundType soundType, bool withLoop, float delay = 0.0f)
+    public AudioSource Play(AudioClip clip, string mixerGroupName, bool withLoop, float delay)
     {
         AudioSource a = GetSourceByPooling();
         a.clip = clip;
         a.loop = withLoop;
         a.playOnAwake = false;
-        a.outputAudioMixerGroup = mixerByType[soundType];
+        a.outputAudioMixerGroup = myMixerGroups[mixerGroupName];
         a.volume = 1;
         a.PlayDelayed(delay);
-        
+
         return a;
     }
 
-    public AudioSource GetSourceByClip( AudioClip clip )
+    public AudioSource Play(AudioClip clip, string mixerGroupName)
+    {
+        return Play(clip, mixerGroupName, false, 0);
+    }
+
+    public AudioSource GetSourceByClip(AudioClip clip)
     {
         foreach (AudioSource a in sources)
             if (a.isPlaying && a.clip == clip) return a;
         return null;
     }
 
-    public AudioSource GetSourceBySoundType(SoundType soundType)
+    public AudioSource GetSourceBySoundType(string mixerGroupName)
     {
-        AudioMixerGroup mixer = mixerByType[soundType];
+        AudioMixerGroup mixer = myMixerGroups[mixerGroupName];
 
         foreach (AudioSource a in sources)
             if (a.outputAudioMixerGroup == mixer && a.isPlaying) return a;
@@ -68,20 +67,20 @@ public class SoundManager : Singleton<SoundManager> {
         return default(AudioSource);
     }
 
-    public AudioMixerGroup GetMixerByType( SoundType soundType )
+    public AudioMixerGroup GetMixerByType(string mixerGroupName)
     {
-        return mixerByType[soundType];
+        return myMixerGroups[mixerGroupName];
     }
 
-    public bool HasClip( AudioClip clip )
+    public bool HasClip(AudioClip clip)
     {
         return GetSourceByClip(clip) != null;
     }
 
-    public void StopByType( SoundType soundType )
+    public void StopByType(string mixerGroupName)
     {
-        AudioMixerGroup mixer = mixerByType[soundType];
-        
+        AudioMixerGroup mixer = myMixerGroups[mixerGroupName];
+
         foreach (AudioSource a in sources)
             if (a.outputAudioMixerGroup == mixer) a.Stop();
     }
@@ -89,18 +88,6 @@ public class SoundManager : Singleton<SoundManager> {
     public void StopAll()
     {
         foreach (AudioSource a in sources) a.Stop();
-    }
-
-    public void PauseGame()
-    {
-        if (pause == null) pause = masterMixer.FindSnapshot("pause");
-        pause.TransitionTo(.01f);
-    }
-
-    public void PlayGame()
-    {
-        if (unpause == null) unpause = masterMixer.FindSnapshot("unpause");
-        unpause.TransitionTo(.01f);
     }
 
     public bool ToggleMusicVolume()
@@ -124,7 +111,7 @@ public class SoundManager : Singleton<SoundManager> {
         return !current;
     }
 
-    public void ToggleSFXVolume( bool value )
+    public void ToggleSFXVolume(bool value)
     {
         //Debug.Log("TOGGLE SFX VOLUME: " + value);
         PlayerPrefs.SetFloat(fxKey, value ? 0 : -80);
@@ -134,7 +121,7 @@ public class SoundManager : Singleton<SoundManager> {
     public bool HasMusicVolume()
     {
         float volume;
-        if ( !isLoaded ) volume = PlayerPrefs.GetFloat(musicKey, 0);
+        if (!isLoaded) volume = PlayerPrefs.GetFloat(musicKey, 0);
         else masterMixer.GetFloat(musicKey, out volume);
         return volume >= -40;
     }
@@ -142,62 +129,72 @@ public class SoundManager : Singleton<SoundManager> {
     public bool HasSFXVolume()
     {
         float volume;
-        if( !isLoaded ) volume = PlayerPrefs.GetFloat(fxKey, 0);
+        if (!isLoaded) volume = PlayerPrefs.GetFloat(fxKey, 0);
         else masterMixer.GetFloat(fxKey, out volume);
         return volume >= -40;
+    }
+
+    public void SnapshotTransition(string targetSnapshot, float transitionDuration)
+    {
+        GetSnapshot(targetSnapshot).TransitionTo(transitionDuration);
     }
 
     protected override void Awake()
     {
         base.Awake();
-
-
-
-        mixerByType.Add(SoundType.UI_BACKGROUND, masterMixer.FindMatchingGroups("UIMusic")[0]);//uimixer);
-        mixerByType.Add(SoundType.GAME_BACKGROUND, masterMixer.FindMatchingGroups("UIMusic/GameMusic")[0]);//musicmixer);
-        mixerByType.Add(SoundType.UI_EFFECT, masterMixer.FindMatchingGroups("UIFX")[0]);//uimixer);
-        mixerByType.Add(SoundType.GAME_EFFECT, masterMixer.FindMatchingGroups("UIFX/GameFX")[0]);// fxmixer);
-
+        InitializeAudioGroups();
+        InitializeSnapshots();
         sources.AddRange(gameObject.GetComponents<AudioSource>());
     }
 
-    protected override void SceneUnload( Scene scene ){}
+    protected void InitializeAudioGroups()
+    {
+        foreach (var item in audioMixerGroups)
+        {
+            myMixerGroups.Add(item.name, masterMixer.FindMatchingGroups(item.path)[0]);
+        }
+    }
+
+    protected void InitializeSnapshots()
+    {
+        snapshots = new AudioMixerSnapshot[snapshotNames.Length];
+        for (int i = 0; i < snapshotNames.Length; i++)
+        {
+            snapshots[i] = masterMixer.FindSnapshot(snapshotNames[i]);
+        }
+    }
+
+    protected AudioMixerSnapshot GetSnapshot(string name)
+    {
+        for (int i = 0; i < snapshotNames.Length; i++)
+        {
+            if (snapshotNames[i] == name)
+            {
+                return snapshots[i];
+            }
+        }
+        Debug.LogWarning("Nome de Snapshot inválido!");
+        return null;
+    }
+
+    protected override void SceneUnload(Scene scene) { }
 
     public void Start()
     {
         masterMixer.SetFloat(fxKey, PlayerPrefs.GetFloat(fxKey, 0));
         masterMixer.SetFloat(musicKey, PlayerPrefs.GetFloat(musicKey, 0));
-        //masterMixer.SetFloat(musicKey, -80);
         isLoaded = true;
     }
 
-    
-
     private AudioSource GetSourceByPooling()
     {
-        for( int i = 0; i < sources.Count; i++ )
+        for (int i = 0; i < sources.Count; i++)
             if (!sources[i].isPlaying) return sources[i];
 
         AudioSource a = gameObject.AddComponent<AudioSource>();
         sources.Add(a);
         return a;
     }
-    
-
-
-    /*
-    public void Play(string type, AudioClip clip)
-    {
-        if (source == null) source = gameObject.AddComponent<AudioSource>();
-
-        if (source.clip == clip) return;
-
-        //sounds.Add(type, clip);
-        source.clip = clip;
-        source.loop = true;
-        source.Play();
-    }
-    */
 
 }
 
