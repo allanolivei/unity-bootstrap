@@ -6,8 +6,10 @@ public class UIScreenManager : Singleton<UIScreenManager>
 {
 
     public List<UIScreen> screens;
-    private Stack<UIScreen> history;
-    private UIScreen currentScreen;
+    [HideInInspector]
+    public Stack<UIScreen> history;
+    [HideInInspector]
+    public UIScreen currentScreen;
 
     public UIScreen startScreen;
 
