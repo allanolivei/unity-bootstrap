@@ -49,6 +49,7 @@ public class Singleton<T> : MonoBehaviour where T : MonoBehaviour
     }
 
     protected static bool applicationIsQuitting = false;
+    protected bool allowGhost = false;
 
 
     protected virtual void Awake()
@@ -60,13 +61,18 @@ public class Singleton<T> : MonoBehaviour where T : MonoBehaviour
         }
 
         _instance = (this as T);
-        DontDestroyOnLoad(gameObject);
-        SceneManager.sceneUnloaded += SceneUnload;
+        
+        if( !this.allowGhost )
+        {
+            DontDestroyOnLoad(gameObject);
+            SceneManager.sceneUnloaded += SceneUnload;
+        }
     }
 
     protected virtual void OnDestroy()
     {
-        SceneManager.sceneUnloaded -= SceneUnload;
+        if( !this.allowGhost )
+            SceneManager.sceneUnloaded -= SceneUnload;
     }
 
     protected virtual void OnApplicationQuit()
