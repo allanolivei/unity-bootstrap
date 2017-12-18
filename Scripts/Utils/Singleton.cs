@@ -60,7 +60,7 @@ public class Singleton<T> : MonoBehaviour where T : MonoBehaviour
         }
 
         _instance = (this as T);
-        DontDestroyOnLoad(gameObject);
+        //DontDestroyOnLoad(gameObject);
         SceneManager.sceneUnloaded += SceneUnload;
     }
 
@@ -76,6 +76,6 @@ public class Singleton<T> : MonoBehaviour where T : MonoBehaviour
 
     protected virtual void SceneUnload( Scene scene )
     {
-        DestroyImmediate(gameObject);
+        //DestroyImmediate(gameObject);
     }
 }
